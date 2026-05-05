@@ -1,4 +1,4 @@
-const BACKEND = 'http://localhost:5000';
+const BACKEND = 'https://job-tracker-2u65.onrender.com/';
 
 async function extractJobFromPage() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

@@ -15,7 +15,7 @@
     "node": "18.x"
   },
   "dependencies": {
-    "concurrently": "^8.2.2"
-  },
-  "devDependencies": {}
+    "concurrently": "^8.2.2",
+    "express": "^5.2.1"
+  }
 }
