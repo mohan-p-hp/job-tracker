@@ -37,7 +37,7 @@ app.get('/test/followups', async (req, res) => {
 // app.get('(.*)', (req, res) => {
 //   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 // });
-app.get('/:path*', (req, res) => {
+app.get('{/*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend-dist', 'index.html'));
 });
 app.listen(PORT, () => {
