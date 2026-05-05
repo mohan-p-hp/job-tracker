@@ -1,0 +1,21 @@
+{
+  "name": "job-tracker",
+  "version": "1.0.0",
+  "description": "Job application tracker",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "heroku-postbuild": "npm run build"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {}
+}
