@@ -53,8 +53,8 @@ app.get('/test/todo-reminders', async (req, res) => {
 // app.get('(.*)', (req, res) => {
 //   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 // });
-app.get('{/*path}', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend-dist', 'index.html'));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
