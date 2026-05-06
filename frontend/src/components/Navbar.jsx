@@ -42,6 +42,7 @@ export default function Navbar() {
         <Link to="/" style={linkStyle('/')}>Dashboard</Link>
         <Link to="/analytics" style={linkStyle('/analytics')}>Analytics</Link>
         <Link to="/followups" style={linkStyle('/followups')}>Follow-ups</Link>
+        <Link to="/todos" style={linkStyle('/todos')}>📝 To-Do</Link>
       </div>
 
       <button

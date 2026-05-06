@@ -5,6 +5,7 @@ import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
 import Analytics from './pages/Analytics'
 import FollowUps from './pages/FollowUps'
+import TodoPage from './pages/TodoPage'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/followups" element={<FollowUps />} />
+        <Route path="/todos" element={<TodoPage />} />
       </Routes>
     </BrowserRouter>
   )
