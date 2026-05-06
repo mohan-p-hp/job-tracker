@@ -37,7 +37,16 @@ export default function TodoForm({ todo, onSubmit, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Convert empty strings to null for backend compatibility
+    const cleanData = {
+      ...formData,
+      due_date: formData.due_date || null,
+      due_time: formData.due_time || null,
+      notes: formData.notes || null
+    };
+    
+    onSubmit(cleanData);
   };
 
   const addSubtask = () => {
