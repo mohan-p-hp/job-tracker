@@ -9,6 +9,7 @@ const outreachRoutes = require('./src/routes/outreach');
 const todoRoutes = require('./src/routes/todos');
 const { startFollowUpWorker, checkFollowUps } = require('./src/workers/followUpWorker');
 const { startTodoReminderWorker, checkTodoReminders } = require('./src/workers/todoReminderWorker');
+const db = require('./src/config/db');
 
 const app = express();
 app.use(cors());
@@ -20,7 +21,14 @@ app.use('/lookup', lookupRoutes);
 app.use('/outreach', outreachRoutes);
 app.use('/todos', todoRoutes);
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', async (req, res) => {
+  try {
+    await db.query('SELECT 1');
+    res.json({ status: 'ok', db: 'connected' });
+  } catch (err) {
+    res.status(500).json({ status: 'ok', db: 'error', message: err.message });
+  }
+});
 
 // Manual trigger for testing
 app.get('/test/followups', async (req, res) => {
