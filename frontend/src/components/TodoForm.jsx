@@ -42,9 +42,19 @@ export default function TodoForm({ todo, onSubmit, onCancel }) {
     e.preventDefault();
     
     // Convert empty strings to null and format date for backend compatibility
+    let formattedDate = null;
+    if (formData.due_date) {
+      // Handle both ISO format and YYYY-MM-DD format
+      if (formData.due_date.includes('T')) {
+        formattedDate = formData.due_date.split('T')[0];
+      } else {
+        formattedDate = formData.due_date;
+      }
+    }
+    
     const cleanData = {
       ...formData,
-      due_date: formData.due_date ? new Date(formData.due_date).toISOString().split('T')[0] : null,
+      due_date: formattedDate,
       due_time: formData.due_time || null,
       notes: formData.notes || null
     };
