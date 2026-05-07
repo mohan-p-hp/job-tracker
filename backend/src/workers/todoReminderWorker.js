@@ -7,7 +7,7 @@ const db = require('../config/db');
 async function sendReminderEmail(todos) {
   const fetch = require('node-fetch');
 
-  const priorityEmoji = { High: '🔴', Medium: '🟡', Low: '🟢' };
+  const priorityEmoji = { Urgent: '🔥', High: '🔴', Medium: '🟡', Low: '🟢' };
   const categoryEmoji = {
     Work: '💼', Personal: '👤', Shopping: '🛒',
     Health: '💪', Finance: '💰', Other: '📌'
@@ -111,7 +111,7 @@ async function checkTodoReminders() {
       `SELECT * FROM todos
        WHERE due_date = ?
          AND status != 'Completed'
-       ORDER BY FIELD(priority, 'High', 'Medium', 'Low'), due_time ASC`,
+       ORDER BY FIELD(priority, 'Urgent', 'High', 'Medium', 'Low'), due_time ASC`,
       [today]
     );
 

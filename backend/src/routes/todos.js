@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
     if (status)   { query += ' AND status = ?';   params.push(status); }
 
     if (sort === 'due_date')  query += ' ORDER BY due_date ASC, due_time ASC';
-    else if (sort === 'priority') query += ' ORDER BY FIELD(priority, "High", "Medium", "Low")';
+    else if (sort === 'priority') query += ' ORDER BY FIELD(priority, "Urgent", "High", "Medium", "Low")';
     else if (sort === 'created')  query += ' ORDER BY created_at DESC';
     else query += ' ORDER BY created_at DESC';
 
@@ -64,6 +64,20 @@ router.get('/', async (req, res) => {
       );
       todos.forEach(todo => {
         todo.subtasks = subtasks.filter(s => s.todo_id === todo.id);
+      });
+    }
+
+    // Attach tags to each todo
+    if (todos.length > 0) {
+      const todoIds = todos.map(t => t.id);
+      const [tagData] = await db.query(`
+        SELECT tt.todo_id, t.* FROM tags t
+        JOIN todo_tags tt ON t.id = tt.tag_id
+        WHERE tt.todo_id IN (?)
+      `, [todoIds]);
+      
+      todos.forEach(todo => {
+        todo.tags = tagData.filter(td => td.todo_id === todo.id);
       });
     }
 
@@ -84,7 +98,14 @@ router.get('/:id', async (req, res) => {
 
     const todo = rows[0];
     const [subtasks] = await db.query('SELECT * FROM subtasks WHERE todo_id = ?', [todo.id]);
+    const [tagData] = await db.query(`
+      SELECT t.* FROM tags t
+      JOIN todo_tags tt ON t.id = tt.tag_id
+      WHERE tt.todo_id = ?
+    `, [todo.id]);
+    
     todo.subtasks = subtasks;
+    todo.tags = tagData;
 
     res.json(todo);
   } catch (err) {
@@ -103,7 +124,7 @@ router.post('/', async (req, res) => {
     const {
       title, notes, category, priority, status,
       due_date, due_time, is_recurring, recur_every,
-      subtasks = []
+      subtasks = [], tags = []
     } = req.body;
 
     if (!title) return res.status(400).json({ error: 'Title is required' });
@@ -135,10 +156,26 @@ router.post('/', async (req, res) => {
       );
     }
 
-    // Fetch and return the created todo with subtasks
+    // Insert tags if provided
+    if (tags && tags.length > 0) {
+      const tagValues = tags.map(tagId => [todoId, tagId]);
+      await db.query(
+        'INSERT INTO todo_tags (todo_id, tag_id) VALUES ?',
+        [tagValues]
+      );
+    }
+
+    // Fetch and return the created todo with subtasks and tags
     const [rows] = await db.query('SELECT * FROM todos WHERE id = ?', [todoId]);
     const [subs] = await db.query('SELECT * FROM subtasks WHERE todo_id = ?', [todoId]);
+    const [tagData] = await db.query(`
+      SELECT t.* FROM tags t
+      JOIN todo_tags tt ON t.id = tt.tag_id
+      WHERE tt.todo_id = ?
+    `, [todoId]);
+    
     rows[0].subtasks = subs;
+    rows[0].tags = tagData;
 
     res.status(201).json(rows[0]);
   } catch (err) {

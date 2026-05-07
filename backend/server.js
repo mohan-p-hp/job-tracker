@@ -7,6 +7,10 @@ const recruiterRoutes = require('./src/routes/recruiters');
 const lookupRoutes = require('./src/routes/lookup');
 const outreachRoutes = require('./src/routes/outreach');
 const todoRoutes = require('./src/routes/todos');
+const timeTrackingRoutes = require('./src/routes/timeTracking');
+const tagsRoutes = require('./src/routes/tags');
+const dependenciesRoutes = require('./src/routes/dependencies');
+const recommendationsRoutes = require('./src/routes/recommendations');
 const { startFollowUpWorker, checkFollowUps } = require('./src/workers/followUpWorker');
 const { startTodoReminderWorker, checkTodoReminders } = require('./src/workers/todoReminderWorker');
 const db = require('./src/config/db');
@@ -20,6 +24,10 @@ app.use('/recruiters', recruiterRoutes);
 app.use('/lookup', lookupRoutes);
 app.use('/outreach', outreachRoutes);
 app.use('/todos', todoRoutes);
+app.use('/api', timeTrackingRoutes);
+app.use('/api', tagsRoutes);
+app.use('/api', dependenciesRoutes);
+app.use('/api', recommendationsRoutes);
 
 app.get('/health', async (req, res) => {
   try {
