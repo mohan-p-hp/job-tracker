@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import TagSelector from './TagSelector';
 
 const categories = ['Work', 'Personal', 'Shopping', 'Health', 'Finance', 'Other'];
-const priorities = ['High', 'Medium', 'Low'];
+const priorities = ['Urgent', 'High', 'Medium', 'Low'];
 const statuses = ['Pending', 'In Progress', 'Completed'];
 
 export default function TodoForm({ todo, onSubmit, onCancel }) {
@@ -15,7 +16,8 @@ export default function TodoForm({ todo, onSubmit, onCancel }) {
     due_time: '',
     is_recurring: false,
     recur_every: 'Daily',
-    subtasks: []
+    subtasks: [],
+    tags: []
   });
 
   useEffect(() => {
@@ -30,7 +32,8 @@ export default function TodoForm({ todo, onSubmit, onCancel }) {
         due_time: todo.due_time || '',
         is_recurring: todo.is_recurring || false,
         recur_every: todo.recur_every || 'Daily',
-        subtasks: todo.subtasks?.map(s => s.title) || []
+        subtasks: todo.subtasks?.map(s => s.title) || [],
+        tags: todo.tags || []
       });
     }
   }, [todo]);
@@ -180,7 +183,12 @@ export default function TodoForm({ todo, onSubmit, onCancel }) {
             )}
           </div>
 
-          <div className="form-group">
+          <TagSelector 
+        selectedTags={formData.tags}
+        onTagsChange={(tags) => setFormData({ ...formData, tags })}
+      />
+
+      <div className="form-group">
             <div className="subtasks-header">
               <label className="form-label">Subtasks</label>
               <button type="button" className="btn btn--sm btn--secondary" onClick={addSubtask}>

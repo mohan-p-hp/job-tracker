@@ -1,6 +1,6 @@
 export default function TodoFilters({ filters, onChange }) {
   const categories = ['Work', 'Personal', 'Shopping', 'Health', 'Finance', 'Other'];
-  const priorities = ['High', 'Medium', 'Low'];
+  const priorities = ['Urgent', 'High', 'Medium', 'Low'];
   const statuses = ['Pending', 'In Progress', 'Completed'];
   const sortOptions = [
     { value: 'created', label: 'Date Added' },
@@ -11,6 +11,13 @@ export default function TodoFilters({ filters, onChange }) {
   return (
     <div className="todo-filters">
       <div className="filter-row">
+        <input
+          type="text"
+          placeholder="🔍 Search tasks..."
+          value={filters.search || ''}
+          onChange={(e) => onChange({ ...filters, search: e.target.value })}
+          className="filter-search"
+        />
         <select
           value={filters.category}
           onChange={(e) => onChange({ ...filters, category: e.target.value })}
@@ -54,10 +61,10 @@ export default function TodoFilters({ filters, onChange }) {
           ))}
         </select>
 
-        {(filters.category || filters.priority || filters.status) && (
+        {(filters.category || filters.priority || filters.status || filters.search) && (
           <button
             className="btn btn--secondary"
-            onClick={() => onChange({ category: '', priority: '', status: '', sort: 'created' })}
+            onClick={() => onChange({ category: '', priority: '', status: '', sort: 'created', search: '' })}
           >
             Clear Filters
           </button>

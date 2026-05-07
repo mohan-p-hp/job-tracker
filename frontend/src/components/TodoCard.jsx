@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SubtaskList from './SubtaskList';
 
 const PRIORITY_STYLES = {
+  Urgent: { color: '#7c3aed', bg: '#f3f0ff', label: '🔥 Urgent' },
   High:   { color: '#dc2626', bg: '#fef2f2', label: '● High' },
   Medium: { color: '#d97706', bg: '#fffbeb', label: '● Medium' },
   Low:    { color: '#16a34a', bg: '#f0fdf4', label: '● Low' },
@@ -109,6 +110,24 @@ export default function TodoCard({
             📅 {formatDate(todo.due_date)}
             {todo.due_time && ` · ⏰ ${formatTime(todo.due_time)}`}
             {overdue && <span className="overdue-tag"> · OVERDUE</span>}
+          </div>
+        )}
+
+        {/* Tags */}
+        {todo.tags && todo.tags.length > 0 && (
+          <div className="todo-tags">
+            <span className="tags-label">Tags:</span>
+            <div className="tags-list">
+              {todo.tags.map(tag => (
+                <span 
+                  key={tag.id} 
+                  className="todo-tag"
+                  style={{ backgroundColor: tag.color }}
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 

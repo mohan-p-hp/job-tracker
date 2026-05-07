@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import TodoCard from '../components/TodoCard';
 import TodoForm from '../components/TodoForm';
 import TodoFilters from '../components/TodoFilters';
+import PomodoroTimer from '../components/PomodoroTimer';
+import TimeTracker from '../components/TimeTracker';
+import Analytics from '../components/Analytics';
+import DependencyManager from '../components/DependencyManager';
+import SmartRecommendations from '../components/SmartRecommendations';
 import '../styles/todos.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -16,8 +21,10 @@ export default function TodoPage() {
     category: '',
     priority: '',
     status: '',
-    sort: 'created'
+    sort: 'created',
+    search: ''
   });
+  const [selectedTodo, setSelectedTodo] = useState(null);
 
   // Load todos
   const loadTodos = async () => {
@@ -55,6 +62,13 @@ export default function TodoPage() {
     if (filters.status) {
       result = result.filter(t => t.status === filters.status);
     }
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      result = result.filter(t => 
+        t.title.toLowerCase().includes(searchLower) ||
+        (t.notes && t.notes.toLowerCase().includes(searchLower))
+      );
+    }
 
     // Sort
     if (filters.sort === 'due_date') {
@@ -64,7 +78,7 @@ export default function TodoPage() {
         return new Date(a.due_date) - new Date(b.due_date);
       });
     } else if (filters.sort === 'priority') {
-      const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+      const priorityOrder = { Urgent: 0, High: 1, Medium: 2, Low: 3 };
       result.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
     } else {
       result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -164,6 +178,45 @@ export default function TodoPage() {
     }
   };
 
+  const handlePomodoroSessionComplete = async (sessionData) => {
+    console.log('Pomodoro session completed:', sessionData);
+    // You can later integrate this with time tracking API
+    // For now, just log the session
+    alert(`Great work! You completed a 25-minute focus session on: ${sessionData.todoTitle}`);
+  };
+
+  const handleRecommendationAction = (action, recommendation) => {
+    switch (action.type) {
+      case 'create':
+        // Pre-fill form with suggested task data
+        setEditingTodo(null);
+        setShowForm(true);
+        // Store suggestion in localStorage or state for form
+        break;
+      
+      case 'edit':
+        // Open edit form for specific todo
+        const todoToEdit = todos.find(t => t.id === action.todoId);
+        if (todoToEdit) {
+          setEditingTodo(todoToEdit);
+          setShowForm(false);
+        }
+        break;
+      
+      case 'track_time':
+        // Start time tracking for a task
+        const todoToTrack = todos.find(t => t.id === action.todoId);
+        if (todoToTrack) {
+          setSelectedTodo(todoToTrack);
+          // Could scroll to TimeTracker component
+        }
+        break;
+      
+      default:
+        console.log('Unknown action:', action);
+    }
+  };
+
   if (loading) return <div className="todo-page"><p>Loading...</p></div>;
 
   return (
@@ -182,6 +235,38 @@ export default function TodoPage() {
       </div>
 
       <TodoFilters filters={filters} onChange={setFilters} />
+
+      {/* Pomodoro Timer */}
+      <PomodoroTimer 
+        selectedTodo={selectedTodo}
+        todos={filtered.filter(t => t.status !== 'Completed')}
+        onSessionComplete={handlePomodoroSessionComplete}
+      />
+
+      {/* Time Tracker */}
+      <TimeTracker 
+        selectedTodo={selectedTodo}
+        todos={filtered.filter(t => t.status !== 'Completed')}
+        onSessionStart={(session) => console.log('Time session started:', session)}
+        onSessionEnd={(result) => console.log('Time session ended:', result)}
+      />
+
+      {/* Analytics Dashboard */}
+      <Analytics todos={filtered} />
+
+      {/* Smart Recommendations */}
+      <SmartRecommendations 
+        onAction={handleRecommendationAction}
+      />
+
+      {/* Dependency Manager */}
+      {editingTodo && (
+        <DependencyManager 
+          todoId={editingTodo.id}
+          availableTodos={filtered.filter(t => t.id !== editingTodo.id && t.status !== 'Completed')}
+          onDependencyChange={() => loadTodos()}
+        />
+      )}
 
       {showForm && (
         <TodoForm
