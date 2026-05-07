@@ -224,7 +224,13 @@ router.put('/:id', async (req, res) => {
     res.json(updated[0]);
   } catch (err) {
     console.error('PUT /todos/:id error:', err);
-    res.status(500).json({ error: 'Failed to update todo' });
+    if (err.code === 'ER_BAD_FIELD_ERROR') {
+      res.status(400).json({ error: 'Invalid field format', details: err.message });
+    } else if (err.code === 'ER_NO_SUCH_TABLE') {
+      res.status(500).json({ error: 'Database table missing', details: 'Run migrations' });
+    } else {
+      res.status(500).json({ error: 'Failed to update todo', details: err.message });
+    }
   }
 });
 

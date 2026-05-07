@@ -41,10 +41,10 @@ export default function TodoForm({ todo, onSubmit, onCancel }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Convert empty strings to null for backend compatibility
+    // Convert empty strings to null and format date for backend compatibility
     const cleanData = {
       ...formData,
-      due_date: formData.due_date || null,
+      due_date: formData.due_date ? new Date(formData.due_date).toISOString().split('T')[0] : null,
       due_time: formData.due_time || null,
       notes: formData.notes || null
     };
